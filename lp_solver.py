@@ -3,8 +3,9 @@ import numpy as np
 import scipy as sp
 from ortools.linear_solver import pywraplp
 import cvxopt
+import os
 import pulp
-import math
+import sys
 
 
 class LPSolver:
@@ -94,12 +95,13 @@ class LPSolver:
                                  for r in range(len(x))) == self.b_eq[u]
 
         solver += (pulp.lpSum(self.c[i] * x[i] for i in range(len(x))))
-        solver.solve()
-        solver.writeLP("lp_problem.lp")
+        #solver.solve()
+        #solver.writeLP("lp_problem.lp")
         if solver.solve():
             x_optimal = np.array([])
             for variable in solver.variables():
-                x_optimal = np.append(x_optimal, variable.varValue)
+                if (variable.varValue != None):
+                    x_optimal = np.append(x_optimal, variable.varValue)
             return x_optimal, np.sum(self.c * x_optimal)
         else:
             print('The solver could not find an optimal solution.')
